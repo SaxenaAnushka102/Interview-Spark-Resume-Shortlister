@@ -1,6 +1,7 @@
 # AI Resume Shortlister
 
-![AI Resume Shortlister Screenshot](https://storage.googleapis.com/aiprompts/assets/ai-resume-shortlister-demo.png)
+<img width="2255" height="1405" alt="Screenshot 2025-08-20 12 52 03 AM" src="https://github.com/user-attachments/assets/d262f770-85bb-4ecf-b60c-63ffa0acba41" />
+
 
 An intelligent, web-based tool that uses Google's Gemini AI to automate the tedious process of resume screening. This application allows recruiters and hiring managers to quickly analyze multiple candidate profiles against a specific job description, providing a ranked and detailed breakdown of each candidate's suitability.
 
