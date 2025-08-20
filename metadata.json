@@ -1,5 +1,5 @@
 {
-  "name": "Copy of AI Resume Shortlister",
+  "name": "Interview Spark",
   "description": "An AI-powered tool to automatically screen and rate candidates based on their resumes against a specific job description. It helps recruiters quickly identify the most suitable applicants.",
   "requestFramePermissions": []
 }

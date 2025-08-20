@@ -1,6 +1,6 @@
 
-import { GoogleGenAI, Type } from "@google/genai";
-import { Candidate, AnalysisResult } from '../types';
+import { GoogleGenAI, Type, Part } from "@google/genai";
+import { AnalysisResult } from '../types';
 
 if (!process.env.API_KEY) {
     throw new Error("API_KEY environment variable not set");
@@ -23,7 +23,7 @@ const analysisSchema = {
                 properties: {
                     candidateName: {
                         type: Type.STRING,
-                        description: "The name of the candidate being analyzed."
+                        description: "The full name of the candidate, extracted from their resume."
                     },
                     suitabilityScore: {
                         type: Type.INTEGER,
@@ -52,17 +52,33 @@ const analysisSchema = {
 };
 
 
-const buildPrompt = (jobDescription: string, candidates: Candidate[]): string => {
-    const candidateProfiles = candidates.map(c => 
-        `--- CANDIDATE PROFILE ---
-        Name: ${c.name}
-        Resume/Profile Text:
-        ${c.resume}
-        --- END CANDIDATE PROFILE ---`
-    ).join('\n\n');
+const fileToGenerativePart = async (file: File): Promise<Part> => {
+    const base64EncodedDataPromise = new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            if (typeof reader.result === 'string') {
+                resolve(reader.result.split(',')[1]);
+            } else {
+                reject(new Error("Failed to read file as data URL."));
+            }
+        };
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+    });
 
-    return `
-      You are an expert technical recruiter and hiring manager with years of experience. Your task is to analyze a list of candidates for a specific job role.
+    const data = await base64EncodedDataPromise;
+    return {
+        inlineData: {
+            data,
+            mimeType: file.type,
+        },
+    };
+};
+
+export const analyzeResumes = async (jobDescription: string, resumeFiles: File[]): Promise<AnalysisResult> => {
+    
+    const prompt = `
+      You are an expert technical recruiter and hiring manager with years of experience. Your task is to analyze a list of candidate resumes for a specific job role.
 
       First, carefully review the provided job description to understand the key requirements, skills, and qualifications.
 
@@ -70,21 +86,23 @@ const buildPrompt = (jobDescription: string, candidates: Candidate[]): string =>
       ${jobDescription}
       --- END JOB DESCRIPTION ---
 
-      Next, analyze each of the following candidate profiles against the job description.
+      Next, analyze each of the attached candidate resume files. For each resume, you must first extract the candidate's full name from the document.
 
-      ${candidateProfiles}
+      Based on your analysis, provide a detailed evaluation for each candidate against the job description and identify the top candidate overall.
 
-      Based on your analysis, provide a detailed evaluation for each candidate and identify the top candidate. Respond ONLY with a JSON object that matches the provided schema. Do not include any other text or markdown formatting.
+      Respond ONLY with a JSON object that matches the provided schema. The 'candidateName' for each analysis in your response MUST be the name you extracted from the corresponding resume file. Do not include any other text or markdown formatting.
     `;
-};
 
-export const analyzeResumes = async (jobDescription: string, candidates: Candidate[]): Promise<AnalysisResult> => {
-    const prompt = buildPrompt(jobDescription, candidates);
-    
     try {
+        const fileParts = await Promise.all(resumeFiles.map(fileToGenerativePart));
+        
+        const contents = {
+            parts: [{ text: prompt }, ...fileParts],
+        };
+
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
-            contents: prompt,
+            contents: contents,
             config: {
                 responseMimeType: "application/json",
                 responseSchema: analysisSchema,
@@ -95,7 +113,6 @@ export const analyzeResumes = async (jobDescription: string, candidates: Candida
         const jsonText = response.text.trim();
         const result = JSON.parse(jsonText);
         
-        // Basic validation
         if (!result.candidateAnalyses || !result.topCandidateName) {
             throw new Error("Invalid JSON structure received from API.");
         }
@@ -104,6 +121,9 @@ export const analyzeResumes = async (jobDescription: string, candidates: Candida
 
     } catch (error) {
         console.error("Error calling Gemini API:", error);
+        if (error instanceof Error && error.message.includes('JSON')) {
+             throw new Error("Failed to parse the analysis from the AI. The response was not valid JSON.");
+        }
         throw new Error("Failed to get analysis from AI. Please check the console for more details.");
     }
 };

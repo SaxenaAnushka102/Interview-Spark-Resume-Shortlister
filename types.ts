@@ -1,10 +1,4 @@
 
-export interface Candidate {
-  id: number;
-  name: string;
-  resume: string;
-}
-
 export interface CandidateAnalysis {
   candidateName: string;
   suitabilityScore: number;
