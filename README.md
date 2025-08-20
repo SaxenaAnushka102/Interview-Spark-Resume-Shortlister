@@ -1,5 +1,4 @@
 # Interview Spark AI Resume Shortlister
-<img width="2254" height="1392" alt="image" src="https://github.com/user-attachments/assets/cc5d6bc4-464a-4ec6-8462-9dce7f8d371a" />
 
 Interview Spark is an AI-powered tool designed to streamline the initial stages of the hiring process. It automatically screens and rates candidates by analyzing their resumes against a specific job description, helping recruiters and hiring managers quickly identify the most suitable applicants.
 
@@ -29,35 +28,6 @@ Using Interview Spark is a simple three-step process:
 -   **Frontend**: [React](https://reactjs.org/), [TypeScript](https://www.typescriptlang.org/)
 -   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 -   **AI Engine**: [Google Gemini API](https://ai.google.dev/) (`@google/genai`)
-
-## Project Setup
-
-This application is designed to run in a web-based development environment where the necessary dependencies are managed.
-
-### API Key Configuration
-
-The application requires a Google Gemini API key to function. This key must be available as an environment variable named `API_KEY`.
-
--   `process.env.API_KEY`: Your secret Google Gemini API key.
-
-The application is architected to read this key directly from the execution environment. No in-app configuration is required.
-
-### File Structure
-
-The project is organized into the following main directories and files:
-
-```
-/
-├── public/
-├── src/
-│   ├── components/      # Reusable React components (Header, ResultsDisplay, etc.)
-│   ├── services/        # Contains the geminiService.ts for API interactions
-│   ├── App.tsx          # Main application component and state management
-│   ├── index.tsx        # Entry point for the React application
-│   └── types.ts         # TypeScript type definitions
-├── index.html           # Main HTML file
-└── README.md            # You are here!
-```
 
 ## API Key Configuration
 
