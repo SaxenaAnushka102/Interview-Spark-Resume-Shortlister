@@ -58,3 +58,48 @@ The project is organized into the following main directories and files:
 ├── index.html           # Main HTML file
 └── README.md            # You are here!
 ```
+
+## API Key Configuration
+
+The application requires a Google Gemini API key to function.
+
+For local development, this key must be provided in a `.env` file at the root of the project. See the "Running Locally" section for setup instructions.
+
+For deployment, the key must be available as an environment variable in the execution environment (e.g., `VITE_API_KEY` for a Vite build or a similarly named variable for other platforms).
+
+## Running Locally
+
+To run this project on your local machine, please follow these steps.
+
+### Prerequisites
+
+-   [Node.js](https://nodejs.org/) (version 18 or higher is recommended)
+-   [npm](https://www.npmjs.com/) or another package manager like [yarn](https://yarnpkg.com/) or [pnpm](https://pnpm.io/)
+
+### Installation & Setup
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/your-username/interview-spark.git
+    cd interview-spark
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Set up your API Key:**
+    -   Create a new file named `.env` in the root of your project directory.
+    -   Open the `.env` file and add your Google Gemini API key as follows:
+        ```
+        VITE_API_KEY='YOUR_GEMINI_API_KEY_HERE'
+        ```
+    -   Replace `YOUR_GEMINI_API_KEY_HERE` with your actual key.
+
+4.  **Start the development server:**
+    ```bash
+    npm run dev
+    ```
+
+5.  Open your web browser and navigate to `http://localhost:5173` (or the address provided in your terminal) to see the application running.
